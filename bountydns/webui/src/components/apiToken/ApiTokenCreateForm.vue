@@ -78,13 +78,15 @@ export default class ApiTokensCreateForm extends mixins(
     DnsServersMixin,
 ) {
     dnsServers = [];
-    dnsServersSearch = '';
+    dnsServersSearch = uuid4();
     formError = '';
     form = {
-        scopes: '',
+        scopes:
+            'profile dns-request:create dns-request:list zone:list zone:read refresh',
         expires_at: '',
         dns_server_name: '',
     };
+    default_uuid = '';
     onSubmit() {
         let data = {
             scopes: this.form.scopes,
@@ -98,20 +100,19 @@ export default class ApiTokensCreateForm extends mixins(
                 text: 'Api Token Created',
                 type: 'success',
             });
-            bus.$emit('API_TOKEN_ADDED', data.token);
+            bus.$emit('API_TOKEN_CREATED', data.token);
             console.log('emiting formComplete event');
             this.$emit('form-complete');
         });
     }
 
     mounted() {
-        this.form.scopes = this.$store.getters['auth/getToken'].scopes.join(
-            ' ',
-        );
+        // this.form.scopes = this.$store.getters['auth/getToken'].scopes.join(
+        //     ' ',
+        // );
         this.form.expires_at = moment()
             .add(90, 'days')
             .format('YYYY-MM-DD');
-        this.form.dns_server_name = uuid4();
     }
 }
 </script>
